@@ -26,13 +26,13 @@ static uint64_t mm_ticks() {
 }
 
 void get_timestamp(float *t) {
-    *t = mm_ticks()/(float)mm_freq();
+    *t = mm_ticks() / (float)mm_freq();
 }
 
 float get_time() {
-   float t;
-   asm volatile ("mov x0, #0 \t\n mov x1, %0 \t\n svc #0"::"r" (&t));
-   return t;
+   unsigned long t = ((void *)-1);
+   asm volatile ("mov x0, #0 \t\n mov x1, %0 \t\n svc #0" :: "r" (t));
+   return *(float *)t;
 }
 
 void timed_delay() {

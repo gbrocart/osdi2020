@@ -12,12 +12,13 @@
 #include "time.h"
 
 void ker_main() {
-    printf("Hello from kernel\r\n");
     uart_setup();
+    /*
     init_framebuffer(1280, 720);
     color_fill(COLOR_SPLASH);
     position_t p1 = {0, 400};
     position_t p2 = {1280, 600};
-    draw_line(p1, p2, 20, COLOR_WHITE);
+    draw_line(p1, p2, 20, COLOR_WHITE); */
     shell_start();
+    
 }

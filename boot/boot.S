@@ -2,7 +2,7 @@
 _start:                     // entry point for the linker
     mrs    x1, mpidr_el1    // load the multiprocessor affinity register
     and    x1, x1, #3       // OxFF mask to get the cpu id
-    cbz    x1, setup_el2    // if cpuid is 0, start the booting process
+    cbz    x1, setup_bss    // if cpuid is 0, start the booting process
 
 /* 
  * Enter into low power standby mode.
@@ -51,31 +51,36 @@ setup_el2:
     // el1 stack pointer
     ldr x1, =_start
     msr SP_EL1, x1
-    
+
     // return to el1
     eret
- 
+
 setup_el1:
 
-    mov     x0, _start
-    sub     x0, x0, #1000
-    msr     SP_EL0, x0
+    //mov     x0, _start
+    //sub     x0, x0, #1000
+    //msr     SP_EL0, x0
+    
+    // setup the stack
+    ldr     x1, =_start
+    mov     sp, x1
 
-    // Disable SMID
+    // Enable SMID
     mrs x0, CPACR_EL1
     orr x0, x0, #(3 << 20)
     msr CPACR_EL1, x0
 
     // enable EL0
-    mov     x0, #0b00000
-    msr     SPSR_EL1, x0
+    //mov     x0, #0b00000
+    //msr     SPSR_EL1, x0
 
     // return address
-    adr     x0, start_main
-    msr     ELR_EL1, x0
+    //adr     x0, start_main
+    //msr     ELR_EL1, x0
     
     // return to el0
-    eret
+    //eret
+
 
 start_main:
     bl      ker_main        // branch and link to the C code
@@ -124,9 +129,9 @@ start_main:
 
 irq_entry:
     kernel_entry
-    b       enable_irq
+    //b       enable_irq
     bl      irq_handler
-    b       disable_irq
+    //b       disable_irq
     kernel_exit
 
 exception_entry:
@@ -176,13 +181,13 @@ exception_table:
     // 0x200 - 0x400 // 
 
     // synchronous
-    b   handle_unknown
-    //b   exception_entry
+    //b   handle_unknown
+    b   exception_entry
     .align 7
 
     // IRQ
-    b   handle_unknown
-    //b   irq_entry
+    //b   handle_unknown
+    b   irq_entry
     .align 7
 
     // FIQ
@@ -195,13 +200,14 @@ exception_table:
 
     // 0x400 - 0x600
 
-     // synchronous
-    b   exception_entry
+    // synchronous
+    b   handle_unknown   
+    //b   exception_entry
     .align 7
 
     // IRQ
-    //b   handle_unknown
-    b   irq_entry
+    b   handle_unknown
+    //b   irq_entry
     .align 7
 
     // FIQ
