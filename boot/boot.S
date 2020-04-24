@@ -57,7 +57,8 @@ setup_el2:
  
 setup_el1:
 
-    mov     x0, 0x10000
+    mov     x0, _start
+    sub     x0, x0, #1000
     msr     SP_EL0, x0
 
     // Disable SMID
@@ -123,7 +124,9 @@ start_main:
 
 irq_entry:
     kernel_entry
+    b       enable_irq
     bl      irq_handler
+    b       disable_irq
     kernel_exit
 
 exception_entry:
