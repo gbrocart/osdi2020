@@ -10,6 +10,8 @@
 #include "math.h"
 #include "exception.h"
 #include "time.h"
+#include "process.h"
+
 
 void ker_main() {
     uart_setup();
@@ -18,7 +20,12 @@ void ker_main() {
     color_fill(COLOR_SPLASH);
     position_t p1 = {0, 400};
     position_t p2 = {1280, 600};
-    draw_line(p1, p2, 20, COLOR_WHITE); */
-    shell_start();
+    draw_line(p1, p2, 20, COLOR_WHITE); 
+    */
+    //shell_start();
+    privilege_task_create((unsigned long)foo);
+    privilege_task_create((unsigned long)bar);
+    foo();
+    //idle();
     
 }
